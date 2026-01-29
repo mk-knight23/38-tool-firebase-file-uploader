@@ -1,22 +1,216 @@
 @import "tailwindcss";
 
 @theme {
-    --color-cloud-blue: #2563eb;
+  /* Corporate Enterprise Colors */
+  --color-corp-primary: #1e40af;
+  --color-corp-primary-dark: #1e3a8a;
+  --color-corp-primary-light: #3b82f6;
+  --color-corp-bg: #f8fafc;
+  --color-corp-surface: #ffffff;
+  --color-corp-header: #0f172a;
+  --color-corp-border: #e2e8f0;
+  --color-corp-text: #0f172a;
+  --color-corp-text-secondary: #475569;
+  --color-corp-text-muted: #94a3b8;
+  --color-corp-success: #059669;
+  --color-corp-warning: #d97706;
+  --color-corp-error: #dc2626;
+  --color-corp-info: #0284c7;
 }
 
 @layer base {
-    body {
-        @apply bg-slate-50 text-slate-900 antialiased selection:bg-blue-500/30;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
+  :root {
+    /* Spacing */
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+
+    /* Transitions */
+    --duration-fast: 150ms;
+    --duration-base: 300ms;
+    --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  body {
+    @apply bg-corp-bg text-corp-text antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none;
+    box-shadow: 0 0 0 2px #1e40af;
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.2);
+    border-radius: 4px;
+  }
 }
 
 @layer components {
-    .glass-card {
-        @apply bg-white border border-slate-200 shadow-sm backdrop-blur-md;
-    }
+  /* Enterprise Card */
+  .corp-card {
+    @apply bg-corp-surface border border-corp-border;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: box-shadow 300ms cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
 
-    .upload-zone {
-        @apply w-full aspect-square border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all;
-    }
+  .corp-card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+  }
+
+  /* Primary Button */
+  .corp-btn-primary {
+    @apply bg-corp-primary text-white;
+    @apply border-none;
+    border-radius: 8px;
+    @apply px-6 py-3;
+    @apply font-semibold uppercase tracking-wide;
+    @apply transition-all duration-150;
+    letter-spacing: 0.05em;
+  }
+
+  .corp-btn-primary:hover {
+    @apply bg-corp-primary-dark;
+  }
+
+  .corp-btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* Secondary Button */
+  .corp-btn-secondary {
+    @apply bg-corp-surface text-corp-text;
+    @apply border border-corp-border;
+    border-radius: 8px;
+    @apply px-6 py-3;
+    @apply font-medium uppercase tracking-wide;
+    @apply transition-all duration-150;
+    letter-spacing: 0.05em;
+  }
+
+  .corp-btn-secondary:hover {
+    @apply border-corp-primary text-corp-primary;
+  }
+
+  /* Input */
+  .corp-input {
+    @apply bg-corp-surface border border-corp-border;
+    border-radius: 8px;
+    @apply px-4 py-3;
+    @apply text-sm;
+    @apply transition-colors duration-150;
+  }
+
+  .corp-input:focus {
+    @apply border-corp-primary;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  }
+
+  /* Badge */
+  .corp-badge {
+    @apply bg-corp-bg text-corp-text-secondary;
+    @apply border border-corp-border;
+    border-radius: 4px;
+    @apply px-2 py-1;
+    @apply text-xs font-semibold uppercase tracking-wide;
+  }
+
+  /* Upload Zone */
+  .upload-zone {
+    @apply w-full aspect-square;
+    @apply border-2 border-dashed border-corp-border;
+    border-radius: 12px;
+    @apply flex flex-col items-center justify-center;
+    @apply cursor-pointer;
+    @apply transition-all duration-300;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .upload-zone:hover {
+    @apply border-corp-primary;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.02) 0%, #f8fafc 100%);
+  }
+
+  /* Progress Bar */
+  .corp-progress {
+    @apply w-full bg-corp-border rounded-full overflow-hidden;
+    height: 8px;
+  }
+
+  .corp-progress-bar {
+    @apply bg-corp-primary h-full;
+    transition: width 300ms cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+}
+
+@layer utilities {
+  /* Visually hidden but accessible */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
 }
