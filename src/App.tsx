@@ -277,6 +277,7 @@ function App() {
             </div>
 
             {/* File Grid */}
+            {files.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {files.map((file, idx) => (
                 <motion.div
@@ -321,6 +322,21 @@ function App() {
                 </motion.div>
               ))}
             </div>
+            ) : (
+            <div className="text-center py-16 border-2 border-dashed border-corp-border rounded-xl">
+              <div className="w-16 h-16 bg-corp-bg rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FolderOpen className="w-8 h-8 text-corp-text-muted" />
+              </div>
+              <h3 className="text-lg font-semibold text-corp-text mb-2">No files yet</h3>
+              <p className="text-sm text-corp-text-secondary mb-4">Upload files or drag and drop them here</p>
+              <button
+                onClick={handleUpload}
+                className="corp-btn-primary text-xs py-2 px-4"
+              >
+                Select Files
+              </button>
+            </div>
+            )}
 
             {/* Security Banner */}
             <div className="p-6 bg-corp-header text-white rounded-xl flex items-center gap-6">
