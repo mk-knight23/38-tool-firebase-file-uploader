@@ -13,17 +13,97 @@ const RECENT_FILES = [
   { id: 4, name: "Theme_Song_v2.mp3", size: "8.5 MB", type: "audio", date: "2 days ago" },
 ];
 
+interface UploadFile {
+  id: number;
+  name: string;
+  size: string;
+  type: string;
+  date: string;
+  file?: File;
+}
+
 function App() {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isDragOver, setIsDragOver] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [files, setFiles] = useState<UploadFile[]>(RECENT_FILES);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = () => {
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  const handleFileSelect = (selectedFiles: FileList | null) => {
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    const file = selectedFiles[0];
+
+    // Validate file size (max 500MB)
+    if (file.size > 500 * 1024 * 1024) {
+      alert('File size must be less than 500MB');
+      return;
+    }
+
+    // Simulate upload
     setIsUploading(true);
+    setUploadProgress(0);
+
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(interval);
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 300);
+
     setTimeout(() => {
+      clearInterval(interval);
+      setUploadProgress(100);
+
+      const newFile: UploadFile = {
+        id: Date.now(),
+        name: file.name,
+        size: formatFileSize(file.size),
+        type: getFileType(file.type, file.name),
+        date: 'Just now',
+        file: file
+      };
+
+      setFiles(prev => [newFile, ...prev]);
       setIsUploading(false);
-      alert('File uploaded successfully! (Mock Demo)');
+      setUploadProgress(0);
     }, 2000);
+  };
+
+  const handleUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    handleFileSelect(e.dataTransfer.files);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const deleteFile = (id: number) => {
+    setFiles(prev => prev.filter(f => f.id !== id));
   };
 
   const copyLink = (id: number) => {
@@ -100,9 +180,12 @@ function App() {
 
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="upload-zone"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                className={`upload-zone ${isDragOver ? 'border-corp-primary bg-corp-primary/5' : ''}`}
               >
-                <input type="file" ref={fileInputRef} className="hidden" onChange={handleUpload} />
+                <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileSelect(e.target.files)} />
 
                 <AnimatePresence mode="wait">
                   {isUploading ? (
@@ -111,10 +194,17 @@ function App() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex flex-col items-center"
+                      className="flex flex-col items-center w-full px-6"
                     >
                       <div className="w-12 h-12 border-4 border-corp-border border-t-corp-primary rounded-full animate-spin mb-4" />
-                      <p className="text-sm font-semibold text-corp-primary">Uploading...</p>
+                      <p className="text-sm font-semibold text-corp-primary mb-2">Uploading...</p>
+                      <div className="w-full corp-progress">
+                        <motion.div
+                          className="corp-progress-bar"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-corp-text-muted mt-1">{Math.round(uploadProgress)}%</p>
                     </motion.div>
                   ) : (
                     <motion.div
@@ -123,10 +213,12 @@ function App() {
                       animate={{ opacity: 1 }}
                       className="flex flex-col items-center text-center"
                     >
-                      <div className="w-16 h-16 bg-corp-primary/10 rounded-xl flex items-center justify-center text-corp-primary mb-4">
+                      <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-4 transition-colors ${isDragOver ? 'bg-corp-primary text-white' : 'bg-corp-primary/10 text-corp-primary'}`}>
                         <CloudUpload className="w-8 h-8" />
                       </div>
-                      <h3 className="text-sm font-semibold mb-1">Drop files here</h3>
+                      <h3 className="text-sm font-semibold mb-1">
+                        {isDragOver ? 'Drop to upload' : 'Drop files here'}
+                      </h3>
                       <p className="text-xs text-corp-text-muted">Max 500MB • PDF, JPG, PNG</p>
                     </motion.div>
                   )}
@@ -176,7 +268,7 @@ function App() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold">Recent Files</h2>
-                <p className="text-sm text-corp-text-secondary">4 files • 27.8 MB total</p>
+                <p className="text-sm text-corp-text-secondary">{files.length} files • Upload to add more</p>
               </div>
               <button className="corp-btn-secondary text-xs py-2 px-4">
                 <MoreVertical className="w-4 h-4 inline mr-1" />
@@ -186,7 +278,7 @@ function App() {
 
             {/* File Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {RECENT_FILES.map((file, idx) => (
+              {files.map((file, idx) => (
                 <motion.div
                   key={file.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -205,7 +297,10 @@ function App() {
                       >
                         {copiedId === file.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       </button>
-                      <button className="p-1.5 hover:bg-red-50 rounded text-corp-text-muted hover:text-corp-error transition-colors">
+                      <button
+                        onClick={() => deleteFile(file.id)}
+                        className="p-1.5 hover:bg-red-50 rounded text-corp-text-muted hover:text-corp-error transition-colors"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -259,6 +354,14 @@ function App() {
       </footer>
     </div>
   );
+}
+
+function getFileType(mimeType: string, fileName: string): string {
+  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('audio/')) return 'audio';
+  if (mimeType.startsWith('video/')) return 'video';
+  if (mimeType === 'application/pdf' || fileName.endsWith('.pdf')) return 'pdf';
+  return 'doc';
 }
 
 function getFileIcon(type: string) {
