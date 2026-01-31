@@ -21,8 +21,13 @@ EnterpriseDrive provides a corporate file upload and management interface. Users
 | Input | Type | Description |
 |-------|------|-------------|
 | File Selection | File input | Select files from local device |
-| Drag & Drop | Drop zone | Drag files for upload |
+| Drag & Drop | Drop zone | Drag files onto upload area |
+| File Validation | Auto | Max 500MB, type detection |
 | Search | Text input | Filter files by name |
+
+### Drag & Drop Upload
+
+Drop files directly onto the upload zone. Visual feedback shows when files are being dragged over the area. File type is automatically detected from MIME type or extension.
 
 ---
 
@@ -102,10 +107,10 @@ export const storage = getStorage(app);
 
 ## Limitations
 
-- **Firebase Required**: Must configure Firebase project
-- **File Size**: Limited by Firebase Storage plan
-- **Network**: Requires internet connection
-- **Authentication**: Not implemented (add Firebase Auth)
+- **Client-side only**: Files are stored in memory only — no actual Firebase upload (intentionally not solved; demo tool without backend dependency)
+- **File Size**: Max 500MB per file (client-side validation)
+- **Network**: Requires internet connection for Firebase (if configured)
+- **Authentication**: Not implemented (intentionally not solved — keeps tool simple for demo purposes)
 
 ---
 
