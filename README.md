@@ -20,10 +20,11 @@ EnterpriseDrive provides a corporate file upload and management interface. Users
 
 | Input | Type | Description |
 |-------|------|-------------|
-| File Selection | File input | Select files from local device |
-| Drag & Drop | Drop zone | Drag files onto upload area |
-| File Validation | Auto | Max 500MB, type detection |
+| File Selection | File input (multiple) | Select one or more files from local device |
+| Drag & Drop | Drop zone | Drag single or multiple files onto upload area |
+| File Validation | Auto | Max 500MB per file, type detection |
 | Search | Text input | Filter files by name |
+| Keyboard | Enter/Space | Activate upload zone when focused |
 
 ### Drag & Drop Upload
 
@@ -43,9 +44,9 @@ Drop files directly onto the upload zone. Visual feedback shows when files are b
 
 ## Workflow Steps
 
-1. **Select Files** — Click upload zone or drag files
-2. **Upload** — Files upload to Firebase Storage
-3. **Track Progress** — Visual progress indicator
+1. **Select Files** — Click upload zone, press Enter when focused, or drag files
+2. **Upload** — Files upload to Firebase Storage (simulated for demo)
+3. **Track Progress** — Visual progress indicator with time estimate
 4. **Manage** — Download, share, or delete files
 
 ---
@@ -105,7 +106,36 @@ export const storage = getStorage(app);
 
 ---
 
-## Limitations
+## Recent Upgrades (v2.2.0)
+
+### Iteration 1: Audit & Cleanup
+- Added Firebase cache files to .gitignore
+- Removed dead footer links (Privacy, Terms, Support)
+- Added "Made by MK — Musharraf Kazi" branding
+- Improved copyLink function with clipboard API
+
+### Iteration 2: Core Logic Upgrade
+- Added multiple file upload support
+- File input now accepts multiple files simultaneously
+- Individual file validation (500MB per file)
+- Upload progress shows count for batch uploads
+- Upload time scales with number of files
+
+### Iteration 3: UX / Feel / Humanization
+- Added upload time estimation algorithm
+- Calculates expected duration based on file size
+- Console logging shows time estimates
+- Better progress feedback during uploads
+- Reduces perceived wait time
+
+### Iteration 4: Accessibility & Polish
+- Upload zone is now keyboard accessible (Enter/Space)
+- Added proper focus indicators with ring utility
+- ARIA labels on all interactive elements
+- Keyboard shortcut hints displayed in UI
+- role="button" and proper semantics for screen readers
+
+---
 
 - **Client-side only**: Files are stored in memory only — no actual Firebase upload (intentionally not solved; demo tool without backend dependency)
 - **File Size**: Max 500MB per file (client-side validation)
