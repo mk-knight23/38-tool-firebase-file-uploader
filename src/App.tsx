@@ -108,6 +108,10 @@ function App() {
 
   const copyLink = (id: number) => {
     setCopiedId(id);
+    // In a real app, this would copy the actual file URL
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`https://drive.example.com/file/${id}`);
+    }
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -359,13 +363,9 @@ function App() {
 
       {/* Footer */}
       <footer className="py-6 border-t border-corp-border bg-white">
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center text-xs text-corp-text-muted">
-          <p>© 2026 EnterpriseDrive. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-corp-text transition-colors">Privacy</a>
-            <a href="#" className="hover:text-corp-text transition-colors">Terms</a>
-            <a href="#" className="hover:text-corp-text transition-colors">Support</a>
-          </div>
+        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-corp-text-muted">
+          <p>Made by MK — Musharraf Kazi</p>
+          <p>© 2026 EnterpriseDrive</p>
         </div>
       </footer>
     </div>
