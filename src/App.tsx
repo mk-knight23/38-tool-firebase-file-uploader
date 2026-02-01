@@ -39,6 +39,19 @@ function App() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
 
+  const estimateUploadTime = (bytes: number, count: number): string => {
+    // Assume ~2MB/s upload speed, add 500ms overhead per file
+    const baseSeconds = bytes / (2 * 1024 * 1024); // Convert MB to seconds at 2MB/s
+    const overhead = count * 0.5;
+    const totalSeconds = baseSeconds + overhead;
+
+    if (totalSeconds < 10) return '~10 seconds';
+    if (totalSeconds < 30) return '~30 seconds';
+    if (totalSeconds < 60) return '~1 minute';
+    if (totalSeconds < 120) return '~2 minutes';
+    return `~${Math.ceil(totalSeconds / 60)} minutes`;
+  };
+
   const handleFileSelect = (selectedFiles: FileList | null) => {
     if (!selectedFiles || selectedFiles.length === 0) return;
 
@@ -57,11 +70,17 @@ function App() {
       return;
     }
 
+    // Calculate total file size for time estimation
+    const totalSize = filesToUpload.reduce((acc, file) => acc + file.size, 0);
+    const estimatedTime = estimateUploadTime(totalSize, filesToUpload.length);
+
     // Simulate batch upload
     const totalFiles = filesToUpload.length;
     setIsUploading(true);
     setUploadProgress(0);
     setFilesUploadingCount(totalFiles);
+
+    console.log(`Uploading ${totalFiles} file${totalFiles > 1 ? 's' : ''} (${formatFileSize(totalSize)}). Estimated time: ${estimatedTime}`);
 
     let completedFiles = 0;
 
@@ -223,9 +242,9 @@ function App() {
                         />
                       </div>
                       <p className="text-xs text-corp-text-muted mt-1">{Math.round(uploadProgress)}%</p>
-                      {isUploading && uploadProgress < 100 && filesUploadingCount > 1 && (
+                      {isUploading && uploadProgress < 100 && (
                         <p className="text-xs text-corp-text-secondary mt-2">
-                          Processing {filesUploadingCount} files...
+                          {filesUploadingCount > 1 ? `Uploading ${filesUploadingCount} files...` : 'Uploading file...'}
                         </p>
                       )}
                     </motion.div>
