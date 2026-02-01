@@ -119,6 +119,13 @@ function App() {
     fileInputRef.current?.click();
   };
 
+  const handleUploadZoneKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
@@ -217,10 +224,14 @@ function App() {
 
               <div
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={handleUploadZoneKeyDown}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                className={`upload-zone ${isDragOver ? 'border-corp-primary bg-corp-primary/5' : ''}`}
+                tabIndex={0}
+                role="button"
+                aria-label="Upload files"
+                className={`upload-zone focus:ring-2 focus:ring-corp-primary focus:ring-offset-2 ${isDragOver ? 'border-corp-primary bg-corp-primary/5' : ''}`}
               >
                 <input type="file" ref={fileInputRef} className="hidden" multiple onChange={(e) => handleFileSelect(e.target.files)} />
 
@@ -262,6 +273,9 @@ function App() {
                         {isDragOver ? 'Drop to upload' : 'Drop files here'}
                       </h3>
                       <p className="text-xs text-corp-text-muted">Max 500MB each • Multiple files supported</p>
+                      <p className="text-xs text-corp-text-muted mt-1">
+                        Press <kbd className="px-1.5 py-0.5 bg-corp-bg border border-corp-border rounded font-mono">Enter</kbd> or <kbd className="px-1.5 py-0.5 bg-corp-bg border border-corp-border rounded font-mono">Space</kbd> to upload
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
