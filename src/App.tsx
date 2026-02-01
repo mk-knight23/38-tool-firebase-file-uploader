@@ -25,6 +25,7 @@ interface UploadFile {
 function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [filesUploadingCount, setFilesUploadingCount] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [files, setFiles] = useState<UploadFile[]>(RECENT_FILES);
@@ -41,17 +42,28 @@ function App() {
   const handleFileSelect = (selectedFiles: FileList | null) => {
     if (!selectedFiles || selectedFiles.length === 0) return;
 
-    const file = selectedFiles[0];
+    // Convert FileList to Array and filter valid files
+    const filesToUpload = Array.from(selectedFiles).filter(file => {
+      // Validate file size (max 500MB)
+      if (file.size > 500 * 1024 * 1024) {
+        console.warn(`${file.name} exceeds 500MB limit`);
+        return false;
+      }
+      return true;
+    });
 
-    // Validate file size (max 500MB)
-    if (file.size > 500 * 1024 * 1024) {
-      alert('File size must be less than 500MB');
+    if (filesToUpload.length === 0) {
+      alert('No valid files to upload. Max file size is 500MB.');
       return;
     }
 
-    // Simulate upload
+    // Simulate batch upload
+    const totalFiles = filesToUpload.length;
     setIsUploading(true);
     setUploadProgress(0);
+    setFilesUploadingCount(totalFiles);
+
+    let completedFiles = 0;
 
     const interval = setInterval(() => {
       setUploadProgress(prev => {
@@ -67,19 +79,21 @@ function App() {
       clearInterval(interval);
       setUploadProgress(100);
 
-      const newFile: UploadFile = {
-        id: Date.now(),
+      // Process all files
+      const newFiles: UploadFile[] = filesToUpload.map(file => ({
+        id: Date.now() + Math.random(),
         name: file.name,
         size: formatFileSize(file.size),
         type: getFileType(file.type, file.name),
         date: 'Just now',
         file: file
-      };
+      }));
 
-      setFiles(prev => [newFile, ...prev]);
+      setFiles(prev => [...newFiles, ...prev]);
       setIsUploading(false);
       setUploadProgress(0);
-    }, 2000);
+      setFilesUploadingCount(0);
+    }, 2000 + (totalFiles * 500)); // Longer delay for multiple files
   };
 
   const handleUpload = () => {
@@ -189,7 +203,7 @@ function App() {
                 onDragLeave={handleDragLeave}
                 className={`upload-zone ${isDragOver ? 'border-corp-primary bg-corp-primary/5' : ''}`}
               >
-                <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileSelect(e.target.files)} />
+                <input type="file" ref={fileInputRef} className="hidden" multiple onChange={(e) => handleFileSelect(e.target.files)} />
 
                 <AnimatePresence mode="wait">
                   {isUploading ? (
@@ -209,6 +223,11 @@ function App() {
                         />
                       </div>
                       <p className="text-xs text-corp-text-muted mt-1">{Math.round(uploadProgress)}%</p>
+                      {isUploading && uploadProgress < 100 && filesUploadingCount > 1 && (
+                        <p className="text-xs text-corp-text-secondary mt-2">
+                          Processing {filesUploadingCount} files...
+                        </p>
+                      )}
                     </motion.div>
                   ) : (
                     <motion.div
@@ -223,7 +242,7 @@ function App() {
                       <h3 className="text-sm font-semibold mb-1">
                         {isDragOver ? 'Drop to upload' : 'Drop files here'}
                       </h3>
-                      <p className="text-xs text-corp-text-muted">Max 500MB • PDF, JPG, PNG</p>
+                      <p className="text-xs text-corp-text-muted">Max 500MB each • Multiple files supported</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
