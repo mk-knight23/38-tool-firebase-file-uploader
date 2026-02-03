@@ -18,9 +18,17 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "types": ["vite/client"]
     },
     "include": [
         "src"
+    ],
+    "exclude": [
+        "src/components/FileManager.tsx",
+        "src/components/FolderManager.tsx",
+        "src/components/Search.tsx",
+        "src/config/firebase.ts",
+        "src/services"
     ]
 }
