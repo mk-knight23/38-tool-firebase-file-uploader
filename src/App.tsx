@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router';
+import { Outlet, Link, NavLink as RouterNavLink } from 'react-router';
 import { CloudUpload, FolderOpen, Users, Heart, BarChart3, Settings } from 'lucide-react';
 import { useStore } from './store/useStore';
 
@@ -20,22 +20,22 @@ function App() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
-            <NavLink to="/" icon={<FolderOpen className="w-4 h-4" />}>Files</NavLink>
-            <NavLink to="/favorites" icon={<Heart className="w-4 h-4" />}>Favorites</NavLink>
-            <NavLink to="/shared" icon={<Users className="w-4 h-4" />}>Shared</NavLink>
-            <NavLink to="/analytics" icon={<BarChart3 className="w-4 h-4" />}>Analytics</NavLink>
-            <NavLink to="/settings" icon={<Settings className="w-4 h-4" />}>Settings</NavLink>
+            <NavItem to="/" icon={<FolderOpen className="w-4 h-4" />}>Files</NavItem>
+            <NavItem to="/favorites" icon={<Heart className="w-4 h-4" />}>Favorites</NavItem>
+            <NavItem to="/shared" icon={<Users className="w-4 h-4" />}>Shared</NavItem>
+            <NavItem to="/analytics" icon={<BarChart3 className="w-4 h-4" />}>Analytics</NavItem>
+            <NavItem to="/settings" icon={<Settings className="w-4 h-4" />}>Settings</NavItem>
           </nav>
         </div>
       </header>
 
       {/* Mobile Navigation */}
       <nav className="md:hidden flex items-center gap-1 px-4 py-2 bg-white border-b border-corp-border overflow-x-auto">
-        <NavLink to="/" icon={<FolderOpen className="w-4 h-4" />}>Files</NavLink>
-        <NavLink to="/favorites" icon={<Heart className="w-4 h-4" />}>Favorites</NavLink>
-        <NavLink to="/shared" icon={<Users className="w-4 h-4" />}>Shared</NavLink>
-        <NavLink to="/analytics" icon={<BarChart3 className="w-4 h-4" />}>Analytics</NavLink>
-        <NavLink to="/settings" icon={<Settings className="w-4 h-4" />}>Settings</NavLink>
+        <NavItem to="/" icon={<FolderOpen className="w-4 h-4" />}>Files</NavItem>
+        <NavItem to="/favorites" icon={<Heart className="w-4 h-4" />}>Favorites</NavItem>
+        <NavItem to="/shared" icon={<Users className="w-4 h-4" />}>Shared</NavItem>
+        <NavItem to="/analytics" icon={<BarChart3 className="w-4 h-4" />}>Analytics</NavItem>
+        <NavItem to="/settings" icon={<Settings className="w-4 h-4" />}>Settings</NavItem>
       </nav>
 
       {/* Main Content */}
@@ -52,15 +52,20 @@ function App() {
   );
 }
 
-function NavLink({ to, icon, children }: { to: string; icon: React.ReactNode; children: string }) {
+function NavItem({ to, icon, children }: { to: string; icon: React.ReactNode; children: string }) {
   return (
-    <Link
+    <RouterNavLink
       to={to}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors [&.active]:bg-corp-primary/20 [&.active]:text-corp-primary-light"
+      className={({ isActive }) => `
+        flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+        ${isActive
+          ? 'bg-corp-primary/20 text-corp-primary-light shadow-sm'
+          : 'text-slate-300 hover:text-white hover:bg-white/5'}
+      `}
     >
       {icon}
       <span>{children}</span>
-    </Link>
+    </RouterNavLink>
   );
 }
 

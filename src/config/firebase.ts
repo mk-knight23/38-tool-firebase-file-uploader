@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, deleteObject, getMetadata } from 'firebase/storage';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -30,6 +30,6 @@ interface FirebaseFile {
 
 export { app, storage, auth, googleProvider };
 export { signInWithPopup, signOut, onAuthStateChanged };
-export { ref, uploadBytesResumable, getDownloadURL, listAll, deleteObject };
+export { ref, uploadBytesResumable, getDownloadURL, listAll, deleteObject, getMetadata };
 
 export type { FirebaseFile };

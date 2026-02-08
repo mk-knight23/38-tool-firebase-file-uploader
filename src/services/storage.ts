@@ -5,9 +5,18 @@ import {
   getDownloadURL,
   listAll,
   deleteObject,
+  getMetadata,
   FirebaseFile
 } from '../config/firebase';
 import { getAuth } from 'firebase/auth';
+import { toast } from 'react-hot-toast';
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = [
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'application/pdf', 'text/plain', 'application/zip',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+];
 
 interface UploadOptions {
   folder?: string;
@@ -36,6 +45,14 @@ class StorageService {
       const user = this.auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
+      if (file.size > MAX_FILE_SIZE) {
+        throw new Error('File exceeds 10MB limit');
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type) && !file.name.endsWith('.md')) {
+        throw new Error('Unsupported file type');
+      }
+
       const folderPath = options.folder ? `${options.folder}/` : '';
       const storageRef = ref(storage, `${folderPath}${file.name}`);
 
@@ -57,10 +74,9 @@ class StorageService {
       );
 
       return new Promise((resolve, reject) => {
-        uploadTask.on('complete', () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(resolve);
-        });
-        uploadTask.on('error', reject);
+        uploadTask.then((snapshot) => {
+          getDownloadURL(snapshot.ref).then(resolve);
+        }).catch(reject);
       });
     } catch (error) {
       options.onError?.(error as Error);
@@ -81,7 +97,7 @@ class StorageService {
 
       for (const itemRef of response.items) {
         const url = await getDownloadURL(itemRef);
-        const metadata = await itemRef.getMetadata();
+        const metadata = await getMetadata(itemRef);
 
         files.push({
           id: itemRef.name,

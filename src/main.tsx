@@ -1,10 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router';
+import { GlobalErrorBoundary } from './components/common/GlobalErrorBoundary';
+import { Toaster } from 'react-hot-toast';
 import Router from './router'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <Router />
-    </React.StrictMode>,
-)
+createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+        <GlobalErrorBoundary>
+            <Toaster position="top-right" />
+            <BrowserRouter>
+                <Router />
+            </BrowserRouter>
+        </GlobalErrorBoundary>
+    </StrictMode>
+);
