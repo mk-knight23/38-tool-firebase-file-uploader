@@ -1,10 +1,6 @@
-# Architecture: Cloud File Uploader
+# Architecture Overview
 
-## Overview
-
-Cloud File Uploader is a Tool built with React 19 + Firebase.
-
-## System Architecture
+## System Design
 
 ```
 ┌─────────────────────────────────────────┐
@@ -19,32 +15,21 @@ Cloud File Uploader is a Tool built with React 19 + Firebase.
                    │
 ┌──────────────────▼──────────────────────┐
 │        APPLICATION LAYER                │
-│                 React 19               │
+│         Modern Frontend Stack          │
 └─────────────────────────────────────────┘
 ```
 
 ## Technology Stack
 
-### Frontend
-- Framework: React 19
+- Framework: Modern (React/Vue/Angular)
 - Build: Vite
 - Styling: Tailwind CSS
 - Language: TypeScript
-
-### CI/CD
-- Platform: GitHub Actions
-- Schedule: Every 6 hours
-- Security: Trivy, TruffleHog
-
-### Deployment
-- Primary: Vercel
-- Secondary: Netlify, Firebase, Cloudflare
 
 ## Security
 
 - Security headers on all platforms
 - Automated secret scanning
-- Dependency vulnerability checks
 - XSS protection
 
 ## Performance
@@ -52,4 +37,3 @@ Cloud File Uploader is a Tool built with React 19 + Firebase.
 - Optimized builds
 - CDN distribution
 - Caching strategies
-- Lazy loading
